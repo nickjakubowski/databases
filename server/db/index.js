@@ -5,3 +5,14 @@ var mysql = require('mysql');
 // and to the database "chat".
 
 
+
+// creates connection
+var dbConnection = mysql.createConnection({
+  user: "root",
+  password: "",
+  database: "chat"
+});
+
+// connects to db
+dbConnection.connect();
+
