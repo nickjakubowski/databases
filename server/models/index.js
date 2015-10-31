@@ -4,7 +4,7 @@ module.exports = {
   messages: {
     get: function (callback) { // a function which produces all the messages
       //define query
-      var queryString = "select username,roomname,text,messageID " +
+      var queryString = "select username,roomname,text,messageID as objectId " +
         "from messages m inner join " +
         "users u on ( m.userID = u.userID ) inner join " +
         "rooms r on ( m.roomID = r.roomID );";
@@ -19,18 +19,23 @@ module.exports = {
       });
 
     },
-    post: function (toInsert) {
+    post: function (toInsert, callback) {
       // insert user name placeholder
       
-      var parsedToInsert = JSON.parse(toInsert);
 
-      var userQuery = 'select userID from users where username = ' + parsedToInsert.username + ';';
+      var queryString = 'insert into messages values (0, (select userID from users where username = ?),(select roomID from rooms where roomname = ?), ?);';
+      // [toInsert.username,toInsert.roomname,toInsert.text]
+       db.query(queryString,[toInsert.username,toInsert.roomname,toInsert.text], function(err, results) {
+         
+         if (err) {
+          callback(err);
+         }  else {
+          callback(null, results);
+         }
+   
+       });
 
-      var roomQuery = 'select roomID from rooms where roomname = ' + parsedToInsert.roomname + ';'; 
-
-      var insertMessage = 'insert into messages values (0, userID, roomID, text)';//TO DO
       
-
 
     } // a function which can be used to insert a message into the database
       
@@ -40,7 +45,19 @@ module.exports = {
   users: {
     // Ditto as above.
     get: function () {},
-    post: function () {}
+    post: function (userData, callback) {
+
+      var queryString = 'insert into users values (0, ?);';
+
+      db.query(queryString, [userData.username], function(err, results) {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null, results);
+        }
+      })
+
+    }
   }
 };
 

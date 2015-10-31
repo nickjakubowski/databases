@@ -4,8 +4,7 @@ var headers = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
   "access-control-allow-headers": "content-type, accept",
-  "access-control-max-age": 10,
-  "Content-Type": "application/json"
+  "access-control-max-age": 10
 }
 
 module.exports = {
@@ -15,9 +14,10 @@ module.exports = {
 
 
       models.messages.get(function(err, result) {
-
+        headers['Content-Type'] = "application/json";
         res.writeHead(200, headers);
         res.end(JSON.stringify(result));
+        //delete headers['Content-Type'];
       });
 
 
@@ -25,13 +25,12 @@ module.exports = {
 
     post: function (req, res) {
 
-      console.log('entered post');
-
-      req.setEncoding('utf8');
-      console.log(req.body);
-      models.messages.post(req.body);
-      res.writeHead(200, headers);
-      res.end('{"a":2}');
+      models.messages.post(req.body, function(err, result) {
+        headers['Content-Type'] = "text/html";
+        res.writeHead(201, headers);
+        res.end();   
+      });
+      
     } // a function which handles posting a message to the database
       
 
@@ -40,8 +39,19 @@ module.exports = {
 
   users: {
     // Ditto as above
-    get: function (req, res) {},
-    post: function (req, res) {}
+    get: function (req, res) {
+
+
+    },
+    post: function (req, res) {
+      
+      models.users.post(req.body, function(err, result){
+        headers['Content-Type'] = "text/html";
+        res.writeHead(201, headers);
+        res.end();
+      });
+
+    }
   }
 };
 

@@ -9,4 +9,5 @@ select roomID from rooms where roomname = roomname
 
 insert into messages values (0, userID, roomID, text)
 
-insert into messages values (0, (select userID from users where username = 'greg'), 1, 'hey');
+insert into messages values (0, (select userID from users where username = 'greg'),
+(select roomID from rooms where username = 'lobby'), 'asdfasdg');
