@@ -69,7 +69,11 @@ describe("Persistent Node Chat Server", function() {
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave
     // them up to you. */
-       var queryString = "SELECT * FROM messages";
+      var queryString = "select username,roomname,text,messageID " +
+        "from messages m inner join " +
+        "users u on ( m.userID = u.userID ) inner join " +
+        "rooms r on ( m.roomID = r.roomID );";
+      var queryArgs = [];
 
 
     dbConnection.query(queryString, queryArgs, function(err) {
@@ -78,7 +82,8 @@ describe("Persistent Node Chat Server", function() {
       // Now query the Node chat server and see if it returns
       // the message we just inserted:
       request("http://127.0.0.1:3000/classes/messages", function(error, response, body) {
-        var messageLog = JSON.parse(body);
+        console.log(body);
+        var messageLog = JSON.parse(body).results;
         expect(messageLog[0].text).to.equal("Men like you can never change!");
         expect(messageLog[0].roomname).to.equal("main");
         done();
